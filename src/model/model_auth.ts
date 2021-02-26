@@ -11,10 +11,12 @@ export const auth = (user: User) => (
           let param = [ user.user, user.password ];
           let sql = `CALL auth_user(?, ?)`;
           executeCommand(sql, param).then((result: any) => {
-             if(result[0][0]['E'])
+             if(result && result[0] && result[0][0] && result[0][0]['E'])
                reject(result[0][0]);
-             else 
+             else if(result && result[0] && result[0][0])
                resolve(result[0][0]);
+            else
+               reject({E: 'Erro! login faliu!'});
           });
        } catch (error) {
          errorRegister(error.message + ' In auth');

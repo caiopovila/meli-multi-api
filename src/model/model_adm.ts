@@ -1,6 +1,5 @@
 const Verifier = require('email-verifier');
 
-import { rejects } from 'assert';
 import { executeCommand } from '../connection/create';
 import { User } from '../interfaces/interface_user';
 import { errorRegister } from './model_registerError';
