@@ -29,8 +29,8 @@ ml.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-      //secure: Boolean(SECURE),
-      //httpOnly: true,
+      secure: Boolean(SECURE),
+      httpOnly: true,
       domain: DOMAIN_SESSION,
       path: '/',
       maxAge: 21600000
