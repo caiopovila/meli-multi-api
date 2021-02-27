@@ -37,8 +37,8 @@ ml.use(session({
     }
 }));
 
-ml.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
+ml.use(bodyParser.urlencoded({ extended: true }));
 
-ml.use(express.json({limit: '50mb'}));
+ml.use(express.json());
 
 ml.use('/API', mlAPI);
