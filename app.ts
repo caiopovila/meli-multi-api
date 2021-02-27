@@ -14,7 +14,7 @@ const { DOMAIN_FRONT, SECRET, SECURE, DOMAIN_SESSION, NAME_SESSION } = process.e
 
 export const ml = express();
 
-//ml.use(helmet());
+ml.use(helmet());
 
 ml.use(cors({
   origin: DOMAIN_FRONT,
