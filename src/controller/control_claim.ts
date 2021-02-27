@@ -15,16 +15,19 @@ export const search_claim = (req, res) => {
         }
         
         md_get_client(dclient)
-        .then(async(cli: any) => {
+        .then((cli: any) => {
 
             let options: HttpOptions = {
                 path: `/v1/claims/search${param}`,
                 access_token: cli.access_token
             }
 
-            let claim = await httpMethod(options);
+            httpMethod(options)
+            .then(claim => {
+                res.json(claim);
+            })
+            .catch(error => res.status(500).json(error));
     
-            res.json(claim);
         })
         .catch(error => res.status(500).json(error));
 

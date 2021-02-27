@@ -53,7 +53,7 @@ export const get_det_notif = (req, res) => {
             id_client: req.params.client
         }
         md_get_client(dclient)
-        .then(async(cli: any) => {
+        .then((cli: Client) => {
 
             let url;
 
@@ -67,12 +67,16 @@ export const get_det_notif = (req, res) => {
                 access_token: cli.access_token
             }
 
-            let Denotf = await httpMethod(options);
-    
-            res.json({
-                det: Denotf,
-                top: req.params.topic
-            });
+            httpMethod(options)
+            .then(Denotf => {
+
+                res.json({
+                    det: Denotf,
+                    top: req.params.topic
+                });
+        
+            })
+            .catch(() => res.status(500));
     
         })
         .catch(() => res.status(500));

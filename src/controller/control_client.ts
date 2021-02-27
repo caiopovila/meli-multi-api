@@ -38,16 +38,20 @@ export const get_notices = (req, res) => {
         user_id: Number(req.params.client_id)
       };
       
-      model_client.md_get_client(client).then(async (retCLient: Client) => {
+      model_client.md_get_client(client)
+      .then((retCLient: Client) => {
         
         const options: HttpOptions = {
           path: `/communications/notices?${param}`,
           access_token: retCLient.access_token
         };
       
-        let ret = await httpMethod(options);
+        httpMethod(options)
+        .then(ret => {
+          res.json(ret);
+        })
+        .catch(error => res.status(500).json(error));
       
-        res.json(ret);
       })
       .catch(error => res.status(500).json(error))
     } catch (error) {
@@ -65,16 +69,20 @@ export const get_total_visits = (req, res) => {
         user_id: Number(req.params.client_id)
       };
 
-      model_client.md_get_client(client).then(async (retCLient: Client) => {
+      model_client.md_get_client(client)
+      .then((retCLient: Client) => {
         if (retCLient) {
           const options: HttpOptions = {
             path: `/users/${retCLient.user_id}/items_visits${param}`,
             access_token: retCLient.access_token
           };
-        
-          let ret = await httpMethod(options);
-        
-          res.json(ret);
+      
+          httpMethod(options)
+          .then(ret => {
+            res.json(ret);
+          })
+          .catch(error => res.status(500).json(error));
+
         } else
             res.sendStatus(500);
       })
@@ -94,7 +102,8 @@ export const get_info_client = (req, res) => {
         user_id: Number(req.params.client_id)
       };
 
-      model_client.md_get_client(client).then(async (retCLient: Client) => {
+      model_client.md_get_client(client)
+      .then((retCLient: Client) => {
         if (retCLient) {
           model_client.md_get_info_client(retCLient, param)
           .then(ret => {
@@ -119,16 +128,20 @@ export const get_balance_client = (req, res) => {
         user_id: Number(req.params.client_id)
       };
 
-      model_client.md_get_client(client).then(async (retCLient: Client) => {
+      model_client.md_get_client(client)
+      .then((retCLient: Client) => {
         if (retCLient) {
           const options: HttpOptions = {
             path: `/users/${retCLient.user_id}/mercadopago_account/balance`,
             access_token: retCLient.access_token
           };
-        
-          let ret = await httpMethod(options);
-        
-          res.json(ret);
+
+          httpMethod(options)
+          .then(ret => {
+            res.json(ret);
+          })
+          .catch(error => res.status(500).json(error));
+
         } else
             res.sendStatus(500);
       })
@@ -148,16 +161,20 @@ export const get_total_questions_client = (req, res) => {
         user_id: Number(req.params.client_id)
       };
 
-      model_client.md_get_client(client).then(async (retCLient: Client) => {
+      model_client.md_get_client(client)
+      .then((retCLient: Client) => {
         if (retCLient) {
           const options: HttpOptions = {
             path: `/users/${retCLient.user_id}/contacts/questions${param}`,
             access_token: retCLient.access_token
           };
-        
-          let ret = await httpMethod(options);
-        
-          res.json(ret);
+
+          httpMethod(options)
+          .then(ret => {
+            res.json(ret);
+          })
+          .catch(error => res.status(500).json(error));
+          
         } else
             res.sendStatus(500);
       })
@@ -175,7 +192,7 @@ export const up_client = (req, res) => {
           user_id: req.params.client
       };
       md_get_client(dclient)
-      .then(async(cli: any) => {
+      .then((cli: Client) => {
   /* 
           let body = {
               identification_type: req.body.identification_type,
@@ -200,9 +217,12 @@ export const up_client = (req, res) => {
               access_token: cli.access_token
           }
 
-          let at = await httpMethod(options, req.body);
+          httpMethod(options, req.body)
+          .then(at => {
+            res.json(at);
+          })
+          .catch(error => res.status(500).json(error));
   
-          res.json(at);
       })
       .catch(() => {
           res.status(500);

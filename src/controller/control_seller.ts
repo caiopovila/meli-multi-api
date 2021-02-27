@@ -4,7 +4,7 @@ import { httpMethod, mountParams } from "../model/model_httpReq";
 import { errorRegister } from '../model/model_registerError';
 
 
-export const info_seller =  async (req, res) => {
+export const info_seller = (req, res) => {
     try {
         let param = req.query ? '?' + mountParams(req.query) : '';
 
@@ -13,9 +13,13 @@ export const info_seller =  async (req, res) => {
             access_token: req.session.access_token
         }
 
-        let ret = await httpMethod(optionsSellers);
-
-        res.json(ret);
+        httpMethod(optionsSellers)
+        .then(ret => {
+            res.json(ret);
+        })
+        .catch(error => {
+            res.status(500).json(error);
+        });
         
     } catch (error) {
         errorRegister(error.message + ' In info_seller')

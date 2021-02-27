@@ -5,13 +5,13 @@
   "main": "built/src/bin/server.js",
   "private": true,
   "scripts": {
-    "start": "node ./built/src/bin/server.js",
+    "start": "node --max-old-space-size=4096 ./built/src/bin/server.js",
     "build": "tsc",
     "test": "jest"
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/caiopovila/ml_integra.git"
+    "url": "git+https://github.com/caiopovila/meli.git"
   },
   "keywords": [
     "aplicacao",

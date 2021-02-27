@@ -15,20 +15,24 @@ export const get_message = (req, res) => {
             id_client: req.params.id
         }
         md_get_client(dclient)
-        .then(async(cli: any) => {
+        .then((cli: Client) => {
 
             let options: HttpOptions = {
                 path: `/messages/packs/${req.params.pack}/sellers/${cli.user_id}${param}`,
                 access_token: cli.access_token
             }
 
-            let msg = await httpMethod(options);
+            httpMethod(options)
+            .then(msg => {
+
+                res.json({
+                    msg,
+                    id: req.params.id,
+                    buyer_id: req.params.buyer
+                });
+            })
+            .catch(error => res.status(500).json(error));
     
-            res.json({
-                msg,
-                id: req.params.id,
-                buyer_id: req.params.buyer
-            });
         })
         .catch(error => res.status(500).json(error));
     } catch (error) {
@@ -44,16 +48,19 @@ export const get_attachments = (req, res) => {
             id_client: req.params.id
         }
         md_get_client(dclient)
-        .then(async(cli: any) => {
+        .then((cli: Client) => {
 
             let options: HttpOptions = {
                 path: `/messages/attachments/${req.params.file}`,
                 access_token: cli.access_token
             }
 
-            let ret = await httpMethod(options);
+            httpMethod(options)
+            .then(ret => {
+                res.json(ret);
+            })
+            .catch(error => res.status(500).json(error));
             
-            res.json(ret);
         })
         .catch(error => res.status(500).json(error));
     } catch (error) {
@@ -88,9 +95,12 @@ export const post_message = (req, res) => {
                 access_token: cli.access_token
             }
 
-            let post = await httpMethod(options, body);
+            httpMethod(options, body)
+            .then(post => {
+                res.json(post);
+            })
+            .catch(error => res.status(500).json(error));
     
-            res.json(post);
         })
         .catch(error => res.status(500).json(error));
     } catch (error) {

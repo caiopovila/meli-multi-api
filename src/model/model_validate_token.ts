@@ -8,10 +8,10 @@ require('dotenv').config();
 
 export const { CLIENT_ID, CLIENT_SECRET, REDIRECT_URI, DOMAIN_FRONT, DOMAIN_BACK } = process.env;
 
-export const validate_token_bd = async (user_id: number) => {
+export const validate_token_bd = (user_id: number) => {
     try {
         md_list_client(user_id).then((listClient: any) => {
-            listClient.forEach(async (client: Client) => {
+            listClient.forEach((client: Client) => {
                 
                 if (new Date() >= client.expires_in) {
 
@@ -24,20 +24,26 @@ export const validate_token_bd = async (user_id: number) => {
                         }
                     }
 
-                    let retCli = await httpMethod(options);
+                    httpMethod(options)
+                    .then(retCli => {
+                        if (retCli.access_token) {
 
-                    if (retCli.access_token) {
-
-                        let clientRet: Client = retCli;
-                        clientRet.user = client.user;
-                        md_post_client(clientRet);
-
-                    } else {
-                        md_del_client(client);
-                    }
+                            let clientRet: Client = retCli;
+                            clientRet.user = client.user;
+                            md_post_client(clientRet)
+                            .catch(error => {
+                                errorRegister(error.message + ' In validate_token db');
+                            });
+    
+                        } else {
+                            md_del_client(client)
+                            .catch(error => {
+                                errorRegister(error.message + ' In validate_token db');
+                            });
+                        }
+                    });
                 }      
             });
-            return;
         })
     } catch (error) {
         errorRegister(error.message + ' In validate_token db');

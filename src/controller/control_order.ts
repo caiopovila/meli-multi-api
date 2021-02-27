@@ -6,7 +6,7 @@ import { httpMethod } from "../model/model_httpReq";
 import { errorRegister } from '../model/model_registerError';
 
 
-export const list_order = async (req, res) => {
+export const list_order = (req, res) => {
     try {
         let param = mountParamOrder(req.query);
 
@@ -16,16 +16,19 @@ export const list_order = async (req, res) => {
         };
 
         md_get_client(client)
-        .then(async(retClient: Client) => {
+        .then((retClient: Client) => {
 
             let options: HttpOptions = {
                 path: `/orders/search?seller=${retClient.user_id}${param}`,
                 access_token: retClient.access_token
             }
     
-            let retOrders = await httpMethod(options);
+            httpMethod(options)
+            .then(retOrders => {
+                res.json(retOrders);
+            })
+            .catch(error => res.status(500).json(error));
     
-            res.json(retOrders);
         })
         .catch(error => res.status(500).json(error));
     } catch (error) {
@@ -41,16 +44,21 @@ export const get_client_bl_orders = (req, res) => {
             user_id: req.params.client
         };
         md_get_client(dclient)
-        .then(async(cli: any) => {
+        .then((cli: Client) => {
 
             let optionsBl: HttpOptions = {
                 path: `/users/${cli.user_id}/order_blacklist`,
                 access_token: cli.access_token
             }
 
-            let bl = await httpMethod(optionsBl);
+            httpMethod(optionsBl)
+            .then(bl => {
+                res.json(bl);
+            })
+            .catch(error => {
+                res.status(500).json(error);
+            });
 
-            res.json(bl);
         })
         .catch(error => {
             res.status(500).json(error);
@@ -68,7 +76,7 @@ export const bl_orders_add = (req, res) => {
             id_client: req.params.client
         };
         md_get_client(dclient)
-        .then(async(cli: any) => {
+        .then((cli: Client) => {
 
             let options: HttpOptions = {
                 path: `/users/${cli.user_id}/order_blacklist`,
@@ -80,9 +88,14 @@ export const bl_orders_add = (req, res) => {
                 user_id: req.body.id_user
             };
     
-            let add = await httpMethod(options, body);
+            httpMethod(options, body)
+            .then(add => {
+                res.json(add);       
+            })
+            .catch(() => {
+                res.status(500);
+            });
     
-            res.json(add);       
         })
         .catch(() => {
             res.status(500);
@@ -100,7 +113,7 @@ export const bl_orders_rm = (req, res) => {
             id_client: req.params.client
         };
         md_get_client(dclient)
-        .then(async(cli: any) => {
+        .then((cli: Client) => {
 
             let options: HttpOptions = { 
                 path: `/users/${cli.user_id}/order_blacklist/${req.params.user}`,
@@ -108,9 +121,13 @@ export const bl_orders_rm = (req, res) => {
                 access_token: cli.access_token
             };
     
-            let ret = await httpMethod(options);
-            
-            res.json(ret);   
+            httpMethod(options)
+            .then(ret => {
+                res.json(ret);  
+            })
+            .catch(error => {
+                res.status(500).json(error);
+            });
         })
         .catch(error => {
             res.status(500).json(error);

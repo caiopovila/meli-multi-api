@@ -12,7 +12,8 @@ export const list_questions = (req, res) => {
             user: Number(req.session.user_id), 
             user_id: Number(req.params.client_id)
         }
-        md_get_client(dclient).then((cli: Client) => {
+        md_get_client(dclient)
+        .then((cli: Client) => {
             let param = req.query ? "?" + mountParams(req.query) : '';
 
             let options: HttpOptions = {
@@ -20,7 +21,8 @@ export const list_questions = (req, res) => {
                 access_token: cli.access_token
             }
 
-            httpMethod(options).then((questions) => {
+            httpMethod(options)
+            .then((questions) => {
                 res.json(questions);
             })
             .catch(error => res.status(500).json(error));
@@ -32,28 +34,34 @@ export const list_questions = (req, res) => {
     }
 }
 
-export const post_answer = async (req, res) => {
+export const post_answer = (req, res) => {
     try {
         const dclient: Client = {
             user: req.session.user_id, 
             id_client: req.params.client_id
         }
-        let cli: any = await md_get_client(dclient);
+        md_get_client(dclient)
+        .then((cli: Client) => {
 
-        let options: HttpOptions = {
-            path: `/answers`,
-            method: 'POST',
-            access_token: cli.access_token
-        }
-
-        let body = {
-            question_id: req.params.question_id,
-            text: req.body.text
-        };
-
-        let ret = await httpMethod(options, body);
-
-        res.json(ret);
+            let options: HttpOptions = {
+                path: `/answers`,
+                method: 'POST',
+                access_token: cli.access_token
+            }
+    
+            let body = {
+                question_id: req.params.question_id,
+                text: req.body.text
+            };
+    
+            httpMethod(options, body)
+            .then(ret => {
+                res.json(ret);
+            })
+            .catch(error => res.status(500).json(error));
+    
+        })
+        .catch(error => res.status(500).json(error));
 
     } catch (error) {
         errorRegister(error.message + ' In post_answer');
@@ -61,23 +69,31 @@ export const post_answer = async (req, res) => {
     }
 }
 
-export const del_question = async (req, res) => {
+export const del_question = (req, res) => {
     try {
         const dclient: Client = {
             user: req.session.user_id, 
             id_client: req.params.client_id
         }
-        let cli: any = await md_get_client(dclient);
+        md_get_client(dclient)
+        .then((cli: Client) => {
 
-        let options: HttpOptions = {
-            path: `/questions/${req.params.question_id}`,
-            method: 'delete',
-            access_token: cli.access_token
-        }
+            let options: HttpOptions = {
+                path: `/questions/${req.params.question_id}`,
+                method: 'delete',
+                access_token: cli.access_token
+            }
+    
+            httpMethod(options)
+            .then(ret => {
+                res.json(ret);
+            })
+            .catch(error => res.status(500).json(error));
+    
+    
+        })
+        .catch(error => res.status(500).json(error));
 
-        let ret = await httpMethod(options);
-
-        res.json(ret);
 
     } catch (error) {
         errorRegister(error.message + ' In del_question');
@@ -92,7 +108,7 @@ export const bl_questions_add = (req, res) => {
             id_client: req.params.client
         };
         md_get_client(dclient)
-        .then(async(cli: any) => {
+        .then((cli: Client) => {
 
             let options: HttpOptions = {
                 path: `/users/${cli.user_id}/questions_blacklist`,
@@ -104,9 +120,14 @@ export const bl_questions_add = (req, res) => {
                 user_id: req.body.id_user
             };
     
-            let add = await httpMethod(options, body);
+            httpMethod(options, body)
+            .then(add => {
+                res.json(add);       
+            })
+            .catch(() => {
+                res.status(500);
+            });
     
-            res.json(add);       
         })
         .catch(() => {
             res.status(500);
@@ -124,7 +145,7 @@ export const bl_questions_rm = (req, res) => {
             id_client: req.params.client
         };
         md_get_client(dclient)
-        .then(async(cli: any) => {
+        .then((cli: Client) => {
 
             let options: HttpOptions = { 
                 path: `/users/${cli.user_id}/questions_blacklist/${req.params.user}`,
@@ -132,9 +153,12 @@ export const bl_questions_rm = (req, res) => {
                 access_token: cli.access_token
             };
     
-            let ret = await httpMethod(options);
+            httpMethod(options)
+            .then(ret => {
+                res.json(ret);   
+            })
+            .catch(error => res.status(500).json(error));;
             
-            res.json(ret);   
         })
         .catch(error => {
             res.status(500).json(error);
@@ -152,16 +176,21 @@ export const get_client_bl_questions = (req, res) => {
             user_id: req.params.client
         };
         md_get_client(dclient)
-        .then(async(cli: any) => {
+        .then((cli: Client) => {
 
             let optionsBl: HttpOptions = {
                 path: `/users/${cli.user_id}/questions_blacklist`,
                 access_token: cli.access_token
             }
 
-            let bl = await httpMethod(optionsBl);
+            httpMethod(optionsBl)
+            .then(bl => {
+                res.json(bl);
+            })
+            .catch(error => {
+                res.status(500).json(error);
+            });
 
-            res.json(bl);
         })
         .catch(error => {
             res.status(500).json(error);

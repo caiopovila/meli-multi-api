@@ -7,7 +7,7 @@ import { mountBody } from '../model/model_item';
 import { errorRegister } from '../model/model_registerError';
 
 
-export const get_item = async (req, res) => {
+export const get_item = (req, res) => {
     try {
 
         const options: HttpOptions = {
@@ -15,20 +15,25 @@ export const get_item = async (req, res) => {
             access_token: req.session.access_token
         }
 
-        let item: any = await httpMethod(options);
+        httpMethod(options)
+        .then(item => {
 
-
-        const optionsDesc: HttpOptions = {
-            path: `/items/${req.params.id}/descriptions`,
-            access_token: req.session.access_token
-        }
-
-        let desc: any = await httpMethod(optionsDesc);
-
-        res.json({
-            description: desc,
-            data: item
-        });
+            const optionsDesc: HttpOptions = {
+                path: `/items/${req.params.id}/descriptions`,
+                access_token: req.session.access_token
+            }
+    
+            httpMethod(optionsDesc)
+            .then(desc => {
+                res.json({
+                    description: desc,
+                    data: item
+                }); 
+            })
+            .catch(error => res.status(500).json(error));
+    
+        })
+        .catch(error => res.status(500).json(error));
 
     } catch (error) {
         errorRegister(error.message + ' In get_item');
@@ -36,7 +41,7 @@ export const get_item = async (req, res) => {
     }
 }
 
-export const get_listing_types = async (req, res) => {
+export const get_listing_types = (req, res) => {
   try {
 
         const optionslisting_types: HttpOptions = {
@@ -44,9 +49,11 @@ export const get_listing_types = async (req, res) => {
             access_token: req.session.access_token
         }
 
-        let listing_types: any = await httpMethod(optionslisting_types);
-
-        res.json(listing_types);
+        httpMethod(optionslisting_types)
+        .then(listing_types => {
+            res.json(listing_types);
+        })
+        .catch(error => res.status(500).json(error));
 
   } catch (error) {
     errorRegister(error.message + ' In get_listing_types');
@@ -54,7 +61,7 @@ export const get_listing_types = async (req, res) => {
   }  
 }
 
-export const get_currencies = async (req, res) => {
+export const get_currencies = (req, res) => {
   try {
 
     const optionsCurrencies: HttpOptions = {
@@ -62,9 +69,11 @@ export const get_currencies = async (req, res) => {
         access_token: req.session.access_token
     }
 
-    let currencies: any = await httpMethod(optionsCurrencies);
-
-    res.json(currencies);
+    httpMethod(optionsCurrencies)
+    .then(currencies => {
+        res.json(currencies);
+    })
+    .catch(error => res.status(500).json(error));
 
   } catch (error) {
     errorRegister(error.message + ' In get_currencies');
@@ -81,7 +90,8 @@ export const post_clone_item = (req, res) => {
                 user_id: req.body.client
             }
         
-            md_get_client(dclient).then((clientdb: Client) => {
+            md_get_client(dclient)
+            .then((clientdb: Client) => {
                 let body;
 
                 if (req.body.item) {
@@ -96,10 +106,13 @@ export const post_clone_item = (req, res) => {
                     access_token: clientdb.access_token
                 }
 
-                httpMethod(optionsPostItem, body).then(responsePostItem => {
+                httpMethod(optionsPostItem, body)
+                .then(responsePostItem => {
                     res.json({ user: clientdb.nickname, response:  responsePostItem});
-                });
-            });
+                })
+                .catch(error => res.status(500).json(error));
+            })
+            .catch(error => res.status(500).json(error));
         } else
             res.status(500).json({E: 'Associado(s) não informado(s).'});
 
@@ -164,7 +177,7 @@ export const post_item = (req, res) => {
     }
 } 
  */
-export const put_item = async (req, res) => {
+export const put_item = (req, res) => {
     try {
         if (req.body && req.body.client) {
             
@@ -180,18 +193,23 @@ export const put_item = async (req, res) => {
             } else
                 res.status(500).json({E: 'item não informado.'});
 
-            let cli: Client = await md_get_client(client);
+            md_get_client(client)
+            .then((cli: Client) => {
 
-            let options: HttpOptions = {
-                path: '/items/' + req.params.id,
-                method: 'PUT',
-                access_token: cli.access_token
-            };
-            
-            httpMethod(options, body)
-            .then(responsePutItem => {
-                res.json({user: cli.nickname, response: responsePutItem });
-            });
+                let options: HttpOptions = {
+                    path: '/items/' + req.params.id,
+                    method: 'PUT',
+                    access_token: cli.access_token
+                };
+                
+                httpMethod(options, body)
+                .then(responsePutItem => {
+                    res.json({user: cli.nickname, response: responsePutItem });
+                })
+                .catch(error => res.status(500).json(error));
+            })
+            .catch(error => res.status(500).json(error));
+
         } else
             res.status(500).json({E: 'Associado(s) não informado(s).'});
 
@@ -201,7 +219,7 @@ export const put_item = async (req, res) => {
     }
 } 
 
-export const search_items = async (req, res) => {
+export const search_items = (req, res) => {
     try {
         let param = mountParams(req.query);
         
@@ -210,9 +228,11 @@ export const search_items = async (req, res) => {
             access_token: req.session.access_token
         }
 
-        let ret = await httpMethod(options);
-
-        res.json(ret);
+        httpMethod(options)
+        .then(ret => {
+            res.json(ret);
+        })
+        .catch(error => res.status(500).json(error));
 
     } catch (error) {
         errorRegister(error.message || error.E + ' In search_items');
@@ -220,7 +240,7 @@ export const search_items = async (req, res) => {
     }
 }
 
-export const get_clients_items = async (req, res) => {
+export const get_clients_items = (req, res) => {
     try {
         let param = req.query ? '?' + mountParams(req.query) : '';
    
@@ -229,9 +249,11 @@ export const get_clients_items = async (req, res) => {
             access_token: req.session.access_token
         }
 
-        let ret = await httpMethod(options);
-
-        res.json(ret);
+        httpMethod(options)
+        .then(ret => {
+            res.json(ret);
+        })
+        .catch(error => res.status(500).json(error));
 
     } catch (error) {
         errorRegister(error.message + ' In get_clients_items');
@@ -239,7 +261,7 @@ export const get_clients_items = async (req, res) => {
     }
 }
 
-export const get_list_areas = async (req, res) => {
+export const get_list_areas = (req, res) => {
     try {
         
         const options: HttpOptions = {
@@ -247,9 +269,11 @@ export const get_list_areas = async (req, res) => {
             access_token: req.session.access_token
         }
 
-        let ret = await httpMethod(options);
-
-        res.json(ret);
+        httpMethod(options)
+        .then(ret => {
+            res.json(ret);
+        })
+        .catch(error => res.status(500).json(error));
 
     } catch (error) {
         errorRegister(error.message + ' In get_list_states');
@@ -257,7 +281,7 @@ export const get_list_areas = async (req, res) => {
     }
 }
 
-export const get_list_categories = async (req, res) => {
+export const get_list_categories = (req, res) => {
     try {
         
         const options: HttpOptions = {
@@ -265,9 +289,11 @@ export const get_list_categories = async (req, res) => {
             access_token: req.session.access_token
         }
 
-        let ret = await httpMethod(options);
-
-        res.json(ret);
+        httpMethod(options)
+        .then(ret => {
+            res.json(ret);
+        })
+        .catch(error => res.status(500).json(error));
 
     } catch (error) {
         errorRegister(error.message + ' In get_list_categories');
@@ -275,7 +301,7 @@ export const get_list_categories = async (req, res) => {
     }
 }
 
-export const get_category_attributes = async (req, res) => {
+export const get_category_attributes = (req, res) => {
     let param = req.query && req.query.q ? '?' + mountParams(req.query) : '';
 
     try {
@@ -284,9 +310,11 @@ export const get_category_attributes = async (req, res) => {
             access_token: req.session.access_token
         }
 
-        let ret = await httpMethod(options);
-
-        res.json(ret);
+        httpMethod(options)
+        .then(ret => {
+            res.json(ret);
+        })
+        .catch(error => res.status(500).json(error));;
 
     } catch (error) {
         errorRegister(error.message + ' In get_category_attributes');
