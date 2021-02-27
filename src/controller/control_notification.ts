@@ -18,7 +18,7 @@ export const get_list_notif = (req, res) => {
                 
                 setInterval(() => {
                     let options: HttpOptions = {
-                        path: `/myfeeds?app_id=${CLIENT_ID}`,
+                        path: `/missed_feeds?app_id=${CLIENT_ID}`,
                         access_token: item.access_token
                     }
 
