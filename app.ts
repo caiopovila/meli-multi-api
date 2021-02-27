@@ -32,6 +32,7 @@ ml.use(session({
       //secure: Boolean(SECURE),
       httpOnly: true,
       domain: DOMAIN_SESSION,
+      path: '/',
       maxAge: 21600000
     }
 }));
