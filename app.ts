@@ -29,10 +29,11 @@ ml.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-      //secure: Boolean(SECURE),
+      secure: Boolean(SECURE),
       httpOnly: true,
       domain: DOMAIN_SESSION,
       path: '/',
+      sameSite: 'none',
       maxAge: 21600000
     }
 }));
