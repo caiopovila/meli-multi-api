@@ -30,7 +30,7 @@ ml.use(session({
     saveUninitialized: false,
     cookie: {
       //secure: Boolean(SECURE),
-      httpOnly: true,
+      //httpOnly: true,
       domain: DOMAIN_SESSION,
       path: '/',
       maxAge: 21600000
