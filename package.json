@@ -5,7 +5,7 @@
   "main": "built/src/bin/server.js",
   "private": true,
   "scripts": {
-    "start": "node --max-old-space-size=4096 ./built/src/bin/server.js",
+    "start": "node --max-old-space-size=8192 ./built/src/bin/server.js",
     "build": "tsc",
     "test": "jest"
   },
