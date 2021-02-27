@@ -31,11 +31,7 @@ ml.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-<<<<<<< HEAD
       secure: Boolean(SECURE),
-=======
-      //secure: Boolean(SECURE),
->>>>>>> 7002e219480b21e2ec2b1be0259fdce195a66973
       httpOnly: true,
       domain: DOMAIN_SESSION,
       path: '/',
