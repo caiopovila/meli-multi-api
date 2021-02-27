@@ -30,14 +30,14 @@ ml.use(session({
     name: NAME_SESSION,
     resave: false,
     saveUninitialized: false,
-    /*cookie: {
+    cookie: {
       secure: Boolean(SECURE),
       httpOnly: true,
       domain: DOMAIN_SESSION,
       path: '/',
       sameSite: 'none',
       maxAge: 21600000
-    }*/
+    }
 }));
 
 ml.use(bodyParser.urlencoded({ extended: false }));
