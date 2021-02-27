@@ -31,13 +31,13 @@ export const code_valid = async (req, res) => {
   try {
     if (req.query.code && req.session.user_id) {
 
-      const data = JSON.stringify({
+      const data = {
         grant_type: 'authorization_code',
         client_id: CLIENT_ID,
         code: req.query.code,
         client_secret: CLIENT_SECRET,
         redirect_uri: REDIRECT_URI
-      })
+      }
       
       const options = {
         path: '/oauth/token',
@@ -49,12 +49,17 @@ export const code_valid = async (req, res) => {
       }
       
       let retClient = await httpMethod(options, data);
+
       console.log(retClient);
+
       if (retClient.access_token) {
         retClient.user = req.session.user_id;
         md_post_client(retClient).then(() => {
           res.redirect(DOMAIN_FRONT + '/home');
         });
+      } else {
+        errorRegister(retClient.message ? retClient.message : 'acesso negado' + ' In valid code');
+        res.sendStatus(500);
       }
 
     } else {
