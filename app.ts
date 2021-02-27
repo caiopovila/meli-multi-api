@@ -23,8 +23,6 @@ ml.use(cors({
 
 ml.use(express.static(path.join(__dirname, './public')));
 
-ml.set('trust proxy', 1);
-
 ml.use(session({
     secret: SECRET,
     name: NAME_SESSION,
@@ -34,8 +32,6 @@ ml.use(session({
       //secure: Boolean(SECURE),
       httpOnly: true,
       domain: DOMAIN_SESSION,
-      path: '/',
-      sameSite: 'strict',
       maxAge: 21600000
     }
 }));
