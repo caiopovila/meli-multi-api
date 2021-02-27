@@ -14,7 +14,7 @@ const { DOMAIN_FRONT, SECRET, SECURE, DOMAIN_SESSION, NAME_SESSION } = process.e
 
 export const ml = express();
 
-ml.use(helmet());
+//ml.use(helmet());
 
 ml.use(cors({
   origin: DOMAIN_FRONT,
@@ -30,18 +30,18 @@ ml.use(session({
     name: NAME_SESSION,
     resave: false,
     saveUninitialized: false,
-    /*cookie: {
+    cookie: {
       secure: Boolean(SECURE),
       httpOnly: true,
       domain: DOMAIN_SESSION,
       path: '/',
       sameSite: 'none',
       maxAge: 21600000
-    }*/
+    }
 }));
 
-ml.use(bodyParser.urlencoded({ extended: false }));
+ml.use(bodyParser.urlencoded({ extended: true, limit: '50mb' }));
 
-ml.use(express.json());
+ml.use(express.json({limit: '50mb'}));
 
 ml.use('/API', mlAPI);
