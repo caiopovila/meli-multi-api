@@ -9,38 +9,44 @@ import { mlAPI } from './src/mlAPI';
 
 require('dotenv').config();
 
-
-const { DOMAIN_FRONT, SECRET, SECURE, DOMAIN_SESSION, NAME_SESSION } = process.env;
+const { 
+  DOMAIN_FRONT, 
+  SECRET, 
+  SECURE, 
+  DOMAIN_SESSION, 
+  NAME_SESSION } = process.env;
 
 export const ml = express();
-
-ml.use(helmet());
-
-if (SECURE === 'production') {
-  ml.set('trust proxy', 1) 
-}
 
 ml.use(cors({
   origin: DOMAIN_FRONT,
   credentials: true
 }));
 
+ml.use(helmet());
+
 ml.use(express.static(path.join(__dirname, './public')));
 
-ml.use(session({
-    secret: SECRET,
-    name: NAME_SESSION,
-    resave: false,
-    saveUninitialized: false,
-    cookie: {
-      //secure: Boolean(SECURE),
-      httpOnly: true,
-      domain: DOMAIN_SESSION,
-      path: '/',
-      maxAge: 21600000,
-      sameSite: 'none'
-    }
-}));
+let sss: any = {
+  secret: SECRET,
+  name: NAME_SESSION,
+  resave: false,
+  saveUninitialized: false,
+  cookie: {
+    httpOnly: true,
+    domain: DOMAIN_SESSION,
+    path: '/',
+    maxAge: 21600000
+  }
+};
+
+if (SECURE === 'true') {
+  ml.set('trust proxy', 1);
+  sss.cookie.secure = true;
+  sss.cookie.sameSite = 'none';
+}
+
+ml.use(session(sss));
 
 ml.use(bodyParser.urlencoded({ extended: true }));
 
