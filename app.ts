@@ -38,7 +38,7 @@ ml.use(session({
       domain: DOMAIN_SESSION,
       path: '/',
       maxAge: 21600000,
-      sameSite: 'lax'
+      sameSite: 'none'
     }
 }));
 
