@@ -57,7 +57,7 @@ export const code_valid = (req, res) => {
 
           retClient.user = req.session.user_id;
           md_post_client(retClient).then(() => {
-            res.redirect(DOMAIN_FRONT + '/home');
+            res.redirect(DOMAIN_FRONT + '/#/home');
           });
 
         } else {
