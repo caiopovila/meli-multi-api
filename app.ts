@@ -16,6 +16,10 @@ export const ml = express();
 
 ml.use(helmet());
 
+if (SECURE === 'production') {
+  ml.set('trust proxy', 1) 
+}
+
 ml.use(cors({
   origin: DOMAIN_FRONT,
   credentials: true
@@ -29,7 +33,7 @@ ml.use(session({
     resave: false,
     saveUninitialized: false,
     cookie: {
-      //secure: Boolean(SECURE),
+      secure: Boolean(SECURE),
       httpOnly: true,
       domain: DOMAIN_SESSION,
       path: '/',
