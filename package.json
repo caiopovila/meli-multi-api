@@ -21,7 +21,14 @@
     "gerencia",
     "frete",
     "pedidos",
-    "clientes"
+    "clientes",
+    "Mercado livre",
+    "mercado livre",
+    "mercado",
+    "livre",
+    "Mercado",
+    "Livre",
+    "produtos"
   ],
   "author": "Caio Mendes Capovila",
   "jest": {

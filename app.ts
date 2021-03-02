@@ -27,7 +27,7 @@ ml.use(helmet());
 
 ml.use(express.static(path.join(__dirname, './public')));
 
-let sss: any = {
+let sss: session.SessionOptions = {
   secret: SECRET,
   name: NAME_SESSION,
   resave: false,
@@ -43,7 +43,7 @@ let sss: any = {
 if (SECURE === 'true') {
   ml.set('trust proxy', 1);
   sss.cookie.secure = true;
-  sss.cookie.sameSite = 'none';
+  sss.proxy = true;
 }
 
 ml.use(session(sss));
