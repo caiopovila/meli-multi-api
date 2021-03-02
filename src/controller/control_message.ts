@@ -1,21 +1,24 @@
+import { Request, Response } from 'express';
 import { Client } from '../interfaces/interface_client';
 import { HttpOptions } from '../interfaces/interface_httpOptons';
+import { MessagePacks } from '../interfaces/interface_message';
 
 import { md_get_client } from "../model/model_client";
 import { httpMethod, mountParams } from "../model/model_httpReq";
 import { errorRegister } from '../model/model_registerError';
 
 
-export const get_message = (req, res) => {
+export const get_message = (req: Request, res: Response) => {
     try {
         let param = req.query ? '?' + mountParams(req.query) : '';
 
         const dclient: Client = {
-            user: req.session.user_id, 
-            id_client: req.params.id
+            user: req.session['user_id'], 
+            id_client: Number(req.params.id) ? Number(req.params.id) : 0
         }
+
         md_get_client(dclient)
-        .then((cli: Client) => {
+        .then((cli) => {
 
             let options: HttpOptions = {
                 path: `/messages/packs/${req.params.pack}/sellers/${cli.user_id}${param}`,
@@ -23,15 +26,14 @@ export const get_message = (req, res) => {
             }
 
             httpMethod(options)
-            .then(msg => {
-
+            .then((msg: MessagePacks) => {
                 res.json({
                     msg,
                     id: req.params.id,
                     buyer_id: req.params.buyer
                 });
             })
-            .catch(error => res.status(500).json(error));
+            .catch((error: any) => res.status(500).json(error));
     
         })
         .catch(error => res.status(500).json(error));
@@ -41,14 +43,14 @@ export const get_message = (req, res) => {
     }
 }
 
-export const get_attachments = (req, res) => {
+export const get_attachments = (req: Request, res: Response) => {
     try {
         const dclient: Client = {
-            user: req.session.user_id, 
-            id_client: req.params.id
+            user: req.session['user_id'], 
+            id_client: Number(req.params.id) ? Number(req.params.id) : 0
         }
         md_get_client(dclient)
-        .then((cli: Client) => {
+        .then((cli) => {
 
             let options: HttpOptions = {
                 path: `/messages/attachments/${req.params.file}`,
@@ -56,10 +58,10 @@ export const get_attachments = (req, res) => {
             }
 
             httpMethod(options)
-            .then(ret => {
+            .then((ret: any) => {
                 res.json(ret);
             })
-            .catch(error => res.status(500).json(error));
+            .catch((error: any) => res.status(500).json(error));
             
         })
         .catch(error => res.status(500).json(error));
@@ -69,37 +71,37 @@ export const get_attachments = (req, res) => {
     }
 }
 
-export const post_message = (req, res) => {
+export const post_message = (req: Request, res: Response) => {
     try {
         const dclient: Client = {
-            user: req.session.user_id, 
-            id_client: req.body.user.user_id
+            user: req.session['user_id'], 
+            user_id: req.body && req.body.user && req.body.user.user_id ? req.body.user.user_id : ''
         }
         md_get_client(dclient)
-        .then(async(cli: any) => {
+        .then((cli) => {
 
             let body = {
                 from: {
                     user_id: cli.user_id,
-                    email: req.body.user.email
+                    email: req.body && req.body.user && req.body.user.email ? req.body.user.email : ''
                 },
                 to: {
-                    user_id: req.body.buyer
+                    user_id: req.body && req.body.buyer ? req.body.buyer : ''
                 },
-                text: req.body.text
+                text: req.body && req.body.text ? req.body.text : ''
             };
     
             let options: HttpOptions = {
-                path: `/messages/${req.body.path}`,
+                path: `/messages/${req.body && req.body.path ? req.body.path : ''}`,
                 method: 'POST',
                 access_token: cli.access_token
             }
 
             httpMethod(options, body)
-            .then(post => {
+            .then((post: any) => {
                 res.json(post);
             })
-            .catch(error => res.status(500).json(error));
+            .catch((error: any) => res.status(500).json(error));
     
         })
         .catch(error => res.status(500).json(error));

@@ -1,9 +1,10 @@
+import { Request, Response } from "express";
 import { User } from "../interfaces/interface_user";
 import { auth, convertBase64, hashGenerator } from "../model/model_auth";
 import { errorRegister } from "../model/model_registerError";
 
 
-export const login = async (req, res) => {
+export const login = (req: Request, res: Response) => {
    try {
       if(req.get('Authorization')) {
          
@@ -14,13 +15,14 @@ export const login = async (req, res) => {
          auth(duser)
          .then((ret: User) => {
             req.session.regenerate(() => {
-               req.session.privilege = ret.privilege;
-               req.session.user_id = ret.id_user;
-               req.session.hash = hashGenerator(ret); 
-               res.json({id: req.session.hash});
+               req.session['privilege'] = ret.privilege;
+               req.session['user_id'] = ret.id_user;
+               req.session['hash'] = hashGenerator(ret); 
+               res.json({id: req.session['hash']});
             });
          })
          .catch(error => res.status(401).json(error));
+
       } else 
          res.status(401).json({ E: 'Valores não informados.' });
 

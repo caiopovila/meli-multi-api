@@ -1,2 +1,0 @@
- 
- Erro: ER_TRUNCATED_WRONG_VALUE_FOR_FIELD: Incorrect integer value: 'undefined' for column ``.``.`v_id_client` at row 1 In connection 

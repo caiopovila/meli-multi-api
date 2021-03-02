@@ -1,5 +1,7 @@
+import { Request, Response } from 'express';
 import { Client } from '../interfaces/interface_client';
 import { HttpOptions } from '../interfaces/interface_httpOptons';
+import { MessagesNotification } from '../interfaces/interface_notification';
 
 import { md_get_client, md_list_client } from "../model/model_client";
 import { httpMethod } from "../model/model_httpReq";
@@ -7,57 +9,58 @@ import { errorRegister } from '../model/model_registerError';
 import { CLIENT_ID } from "../model/model_validate_token";
 
 
-export const get_list_notif = (req, res) => {
+export const get_list_notif = (req: Request, res: Response) => {
     try {
-        md_list_client(req.session.user_id)
-        .then((cli: Array<Client>) => {
+        md_list_client(req.session['user_id'])
+        .then((cli) => {
 
-            let all = [];
+            let all: Array<MessagesNotification> = [];
 
-            cli.forEach((item: Client) => {
-                
-                setInterval(() => {
-                    let options: HttpOptions = {
+            try {
+             
+                cli.forEach((item) => {
+                    
+                    const options: HttpOptions = {
                         path: `/missed_feeds?app_id=${CLIENT_ID}`,
                         access_token: item.access_token
                     }
 
                     httpMethod(options)
-                    .then((notf: any) => {
-                        if (notf && notf.messages)
-                            all.push(notf);
+                    .then((notf: MessagesNotification) => {
+                        all.push(notf);
                     })
-                    .catch(() => res.status(500));
+                    .catch((error: any) => res.status(500).json(error));
 
-                }, 100)
+                });
 
-            });
+            } finally {
 
-            if (all.length > 0)
-                res.json(all);
-            else
-                res.json({E: 'Sem notificações'});
+                if (all.length > 0)
+                    res.json(all);
+                else
+                    res.json({E: 'Sem notificações'});   
+            }
 
         })
-        .catch(() => res.status(500));
+        .catch((error) => res.status(500).json(error));
     } catch (error) {
         errorRegister(error.message + ' In get_list_notif');
         res.sendStatus(500);
     }
 }
 
-export const get_det_notif = (req, res) => {
-    try {    
+export const get_det_notif = (req: Request, res: Response) => {
+    try {
         const dclient: Client = {
-            user: req.session.user_id, 
-            id_client: req.params.client
+            user: req.session['user_id'], 
+            id_client: Number(req.params.client) ? Number(req.params.client) : 0
         }
         md_get_client(dclient)
-        .then((cli: Client) => {
+        .then((cli) => {
 
-            let url;
+            let url = '';
 
-            if(req.params.topic == 'claims')
+            if(req.params.topic === 'claims')
                 url = `/v1/${req.params.topic}/${req.params.reso}`;
             else
                 url = `/${req.params.topic}/${req.params.reso}`;
@@ -68,18 +71,18 @@ export const get_det_notif = (req, res) => {
             }
 
             httpMethod(options)
-            .then(Denotf => {
+            .then((Denotf: any)  => {
 
                 res.json({
-                    det: Denotf,
-                    top: req.params.topic
+                    detail: Denotf,
+                    topic: req.params.topic
                 });
         
             })
-            .catch(() => res.status(500));
+            .catch((error: any) => res.status(500).json(error));
     
         })
-        .catch(() => res.status(500));
+        .catch((error) => res.status(500).json(error));
     } catch (error) {
         errorRegister(error.message + ' In get_det_notif');
         res.sendStatus(500);

@@ -1,6 +1,6 @@
 import * as fs from 'fs';
 
-export const errorRegister = (error: string) => {
+export const errorRegister = (error: string): void => {
     try {
         const data = fs.readFileSync('console.txt');
 

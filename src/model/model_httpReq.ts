@@ -28,7 +28,11 @@ export const httpMethod = (opt: HttpOptions, body?: any): any => (
                       results += d;
                   })
                   resCode.on('end', () => {
+                    if (JSON.parse(results) && JSON.parse(results)['error'])
+                      reject(JSON.parse(results))
+                    else
                       resolve(JSON.parse(results ? results : 'Nada encontrado'));
+
                   })          
                   resCode.on('error', () => {
                     reject({E: 'Erro de conexão'});

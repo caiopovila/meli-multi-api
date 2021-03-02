@@ -1,11 +1,13 @@
 const Verifier = require('email-verifier');
 
 import { executeCommand } from '../connection/create';
+import { Client } from '../interfaces/interface_client';
 import { User } from '../interfaces/interface_user';
+import { Validation } from '../interfaces/interface_validation';
 import { errorRegister } from './model_registerError';
 
 
-export const md_new_user = (duser: User) => (
+export const md_new_user = (duser: User): Promise<Validation> => (
     new Promise((resolve, reject) => {
         try {
             let param = [ 
@@ -15,20 +17,24 @@ export const md_new_user = (duser: User) => (
                 duser.password
             ];
             let sql = `CALL post_user(?, ?, ?, ?)`;
-            executeCommand(sql, param).then((result: any) => {
+            executeCommand(sql, param)
+            .then((result: any) => {
                 if (result && result[0] && result[0][0] && result[0][0]['E'])
-                    reject(result[0][0])
+                    reject(result[0][0]);
                 else
                 if (result && result.affectedRows > 0)
-                    resolve({S: 'Ok'})          
+                    resolve({S: 'Ok'});
+                else
+                    reject({E: 'Nenhum resultado encontrado'});       
             })     
         } catch (error) {
            errorRegister(error.message + ' In md_new_user'); 
+           reject({E: 'Nenhum resultado encontrado'});
         }
     })
 );
 
-export const md_up_user = (duser: User) => (
+export const md_up_user = (duser: User): Promise<Validation> => (
     new Promise((resolve, reject) => {
         try {
             let param = [ 
@@ -45,14 +51,17 @@ export const md_up_user = (duser: User) => (
                 else
                 if (result && result.affectedRows > 0)
                     resolve({S: 'Ok'})
+                else
+                    reject({E: 'Nenhum resultado encontrado'});
             }) 
         } catch (error) {
             errorRegister(error.message + ' In md_up_user');
+            reject({E: 'Nenhum resultado encontrado'});
         }
     })
 );
 
-export const md_del_user = (idUser: number) => (
+export const md_del_user = (idUser: number): Promise<Validation> => (
     new Promise((resolve, reject) => {
         try {
             let param = [ idUser ];
@@ -64,27 +73,34 @@ export const md_del_user = (idUser: number) => (
                 else
                 if (result && result.affectedRows > 0)
                     resolve({S: 'Ok'})
+                else
+                    reject({E: 'Nenhum resultado encontrado'});
             })
         } catch (error) {
             errorRegister(error.message + ' In md_del_user');
+            reject({E: 'Nenhum resultado encontrado'});
         }
     })
 );
 
-export const md_list_users = () => (
+export const md_list_users = (): Promise<Array<User>> => (
     new Promise((resolve, reject) => {
         try {
             let sql = `CALL list_users()`;
             executeCommand(sql, null).then(result => {
-                resolve(result)
+                if (result && result[0])
+                    resolve(result[0]);
+                else
+                    reject({E: 'Nenhum resultado encontrado'});
             })
         } catch (error) {
             errorRegister(error.message + ' In md_list_users');
+            reject({E: 'Nenhum resultado encontrado'});
         }
     })
 );
 
-export const md_get_user = (userId: number) => (
+export const md_get_user = (userId: number): Promise<Client> => (
     new Promise((resolve, reject) => {
         try {
             let param = [ userId ];
@@ -95,14 +111,17 @@ export const md_get_user = (userId: number) => (
                 else
                 if (result && result[0] && result[0][0])
                     resolve(result[0][0])
+                else
+                    reject({E: 'Nenhum resultado encontrado'});
             })
         } catch (error) {
             errorRegister(error.message + ' In md_get_user');
+            reject({E: 'Nenhum resultado encontrado'});
         }
     })
 );
 
-export const email_validator = (email: string) => (
+export const email_validator = (email: string): Promise<Validation> => (
     new Promise((resolve, rejects) => {
         try {
             let verifier = new Verifier("at_TXNdaNUCbem5N5dqv5DJUZHHGcx2r");
@@ -122,6 +141,7 @@ export const email_validator = (email: string) => (
             });
         } catch (error) {
             errorRegister(error.message + ' In email_validator');
+            rejects({ E: 'Erro.' });
         }
     })
 )

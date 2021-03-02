@@ -1,22 +1,24 @@
+import { Request, Response } from 'express';
 import { Client } from '../interfaces/interface_client';
 import { HttpOptions } from '../interfaces/interface_httpOptons';
+import { SearchOrder } from '../interfaces/interface_order';
 
 import { md_get_client } from "../model/model_client";
 import { httpMethod } from "../model/model_httpReq";
 import { errorRegister } from '../model/model_registerError';
 
 
-export const list_order = (req, res) => {
+export const list_order = (req: Request, res: Response) => {
     try {
         let param = mountParamOrder(req.query);
 
         let client: Client = {
-            user: Number(req.session.user_id),
-            user_id: Number(req.params.client_id)
+            user: Number(req.session['user_id']),
+            user_id: Number(req.params.client_id) ? Number(req.params.client_id) : 0
         };
 
         md_get_client(client)
-        .then((retClient: Client) => {
+        .then((retClient) => {
 
             let options: HttpOptions = {
                 path: `/orders/search?seller=${retClient.user_id}${param}`,
@@ -24,10 +26,10 @@ export const list_order = (req, res) => {
             }
     
             httpMethod(options)
-            .then(retOrders => {
+            .then((retOrders: SearchOrder) => {
                 res.json(retOrders);
             })
-            .catch(error => res.status(500).json(error));
+            .catch((error: any) => res.status(500).json(error));
     
         })
         .catch(error => res.status(500).json(error));
@@ -37,14 +39,14 @@ export const list_order = (req, res) => {
     }
 }
 
-export const get_client_bl_orders = (req, res) => {
+export const get_client_bl_orders = (req: Request, res: Response) => {
     try {   
         const dclient: Client = {
-            user: req.session.user_id,
-            user_id: req.params.client
+            user: req.session['user_id'],
+            user_id: Number(req.params.client) ? Number(req.params.client) : 0
         };
         md_get_client(dclient)
-        .then((cli: Client) => {
+        .then((cli) => {
 
             let optionsBl: HttpOptions = {
                 path: `/users/${cli.user_id}/order_blacklist`,
@@ -52,10 +54,10 @@ export const get_client_bl_orders = (req, res) => {
             }
 
             httpMethod(optionsBl)
-            .then(bl => {
+            .then((bl: any) => {
                 res.json(bl);
             })
-            .catch(error => {
+            .catch((error: any) => {
                 res.status(500).json(error);
             });
 
@@ -69,14 +71,14 @@ export const get_client_bl_orders = (req, res) => {
     }
 }
 
-export const bl_orders_add = (req, res) => {
+export const bl_orders_add = (req: Request, res: Response) => {
     try {
         const dclient: Client = {
-            user: req.session.user_id, 
-            id_client: req.params.client
+            user: req.session['user_id'], 
+            user_id: Number(req.params.client) ? Number(req.params.client) : 0
         };
         md_get_client(dclient)
-        .then((cli: Client) => {
+        .then((cli) => {
 
             let options: HttpOptions = {
                 path: `/users/${cli.user_id}/order_blacklist`,
@@ -85,20 +87,20 @@ export const bl_orders_add = (req, res) => {
             }
 
             let body = {
-                user_id: req.body.id_user
+                user_id: req.body && req.body.id_user ? req.body.id_user : ''
             };
     
             httpMethod(options, body)
-            .then(add => {
+            .then((add: any) => {
                 res.json(add);       
             })
-            .catch(() => {
-                res.status(500);
+            .catch((error: any) => {
+                res.status(500).json(error);
             });
     
         })
-        .catch(() => {
-            res.status(500);
+        .catch((error) => {
+            res.status(500).json(error);
         });
     } catch (error) {
         errorRegister(error.message + ' In bl_orders_add');
@@ -106,14 +108,14 @@ export const bl_orders_add = (req, res) => {
     }
 }
 
-export const bl_orders_rm = (req, res) => {
+export const bl_orders_rm = (req: Request, res: Response) => {
     try {
         const dclient: Client = {
-            user: req.session.user_id, 
-            id_client: req.params.client
+            user: req.session['user_id'], 
+            user_id: Number(req.params.client) ? Number(req.params.client) : 0
         };
         md_get_client(dclient)
-        .then((cli: Client) => {
+        .then((cli) => {
 
             let options: HttpOptions = { 
                 path: `/users/${cli.user_id}/order_blacklist/${req.params.user}`,
@@ -122,10 +124,10 @@ export const bl_orders_rm = (req, res) => {
             };
     
             httpMethod(options)
-            .then(ret => {
+            .then((ret: any) => {
                 res.json(ret);  
             })
-            .catch(error => {
+            .catch((error: any) => {
                 res.status(500).json(error);
             });
         })
@@ -138,7 +140,7 @@ export const bl_orders_rm = (req, res) => {
     }
 }
 
-function mountParamOrder(query: any) {
+const mountParamOrder = (query: any): string => {
     let param = '';
 
     if (query.q)

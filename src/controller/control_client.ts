@@ -1,5 +1,10 @@
+import { Request, Response } from 'express';
+import { Balance } from '../interfaces/interface_balance';
 import { Client } from '../interfaces/interface_client';
 import { HttpOptions } from '../interfaces/interface_httpOptons';
+import { ListNotices } from '../interfaces/interface_notices';
+import { TotalQuestions } from '../interfaces/interface_questions';
+import { TotalVisits } from '../interfaces/interface_visits';
 import * as model_client from '../model/model_client';
 import { md_add_nickname, md_get_client } from '../model/model_client';
 import { mountParams, httpMethod } from '../model/model_httpReq';
@@ -9,18 +14,18 @@ import { CLIENT_ID, REDIRECT_URI } from '../model/model_validate_token';
 
 export const AuthUrlMl = `http://auth.mercadolivre.com.br/authorization?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${REDIRECT_URI}`;
 
-export const list_client = (req, res) => {
+export const list_client = (req: Request, res: Response) => {
     try {
-      model_client.md_list_client(Number(req.session.user_id))
-      .then(clientList => res.json(clientList))
-      .catch(error => res.status(500).json(error));
+      model_client.md_list_client(req.session['user_id'])
+      .then((clientList) => res.json(clientList))
+      .catch((error) => res.status(500).json(error));
     } catch (error) {
       errorRegister(error.message + ' In list_client');
       res.sendStatus(500);
     }
 }
 
-export const get_link = (req, res) => {
+export const get_link = (req: Request, res: Response) => {
     try {
       res.redirect(AuthUrlMl);
     } catch (error) {
@@ -29,13 +34,13 @@ export const get_link = (req, res) => {
     }
 }
 
-export const get_notices = (req, res) => {
+export const get_notices = (req: Request, res: Response) => {
     try {
       let param = req.query ? mountParams(req.query) : '';
 
       let client: Client = {
-        user: Number(req.session.user_id),
-        user_id: Number(req.params.client_id)
+        user: Number(req.session['user_id']),
+        user_id: Number(req.params.client_id) ? Number(req.params.client_id) : 0
       };
       
       model_client.md_get_client(client)
@@ -47,10 +52,10 @@ export const get_notices = (req, res) => {
         };
       
         httpMethod(options)
-        .then(ret => {
+        .then((ret: ListNotices) => {
           res.json(ret);
         })
-        .catch(error => res.status(500).json(error));
+        .catch((error: any) => res.status(500).json(error));
       
       })
       .catch(error => res.status(500).json(error))
@@ -60,31 +65,28 @@ export const get_notices = (req, res) => {
     }
 }
 
-export const get_total_visits = (req, res) => {
+export const get_total_visits = (req: Request, res: Response) => {
     try {
       let param = req.query ? "?" + mountParams(req.query) : '';
 
       let client: Client = {
-        user: Number(req.session.user_id) || 0,
-        user_id: Number(req.params.client_id)
+        user: Number(req.session['user_id']),
+        user_id: Number(req.params.client_id) ? Number(req.params.client_id) : 0
       };
 
       model_client.md_get_client(client)
       .then((retCLient: Client) => {
-        if (retCLient) {
-          const options: HttpOptions = {
-            path: `/users/${retCLient.user_id}/items_visits${param}`,
-            access_token: retCLient.access_token
-          };
-      
-          httpMethod(options)
-          .then(ret => {
-            res.json(ret);
-          })
-          .catch(error => res.status(500).json(error));
+        const options: HttpOptions = {
+          path: `/users/${retCLient.user_id}/items_visits${param}`,
+          access_token: retCLient.access_token
+        };
+    
+        httpMethod(options)
+        .then((ret: TotalVisits) => {
+          res.json(ret);
+        })
+        .catch((error: any) => res.status(500).json(error));
 
-        } else
-            res.sendStatus(500);
       })
       .catch(error => res.status(500).json(error))
     } catch (error) {
@@ -93,26 +95,22 @@ export const get_total_visits = (req, res) => {
     }
 }
 
-export const get_info_client = (req, res) => {
+export const get_info_client = (req: Request, res: Response) => {
     try {
       let param = req.query ? "?" + mountParams(req.query) : '';
 
       let client: Client = {
-        user: Number(req.session.user_id),
-        user_id: Number(req.params.client_id)
+        user: Number(req.session['user_id']),
+        user_id: Number(req.params.client_id) ? Number(req.params.client_id) : 0
       };
 
       model_client.md_get_client(client)
-      .then((retCLient: Client) => {
-        if (retCLient) {
+      .then((retCLient) => {
           model_client.md_get_info_client(retCLient, param)
           .then(ret => {
             res.json(ret);
           })
           .catch(error => res.status(500).json(error))
-
-        } else
-            res.sendStatus(500);
       })
       .catch(error => res.status(500).json(error))
     } catch (error) {
@@ -121,29 +119,26 @@ export const get_info_client = (req, res) => {
     }
 }
 
-export const get_balance_client = (req, res) => {
+export const get_balance_client = (req: Request, res: Response) => {
     try {
       let client: Client = {
-        user: Number(req.session.user_id),
-        user_id: Number(req.params.client_id)
+        user: Number(req.session['user_id']),
+        user_id: Number(req.params.client_id) ? Number(req.params.client_id) : 0
       };
 
       model_client.md_get_client(client)
-      .then((retCLient: Client) => {
-        if (retCLient) {
+      .then((retCLient) => {
           const options: HttpOptions = {
             path: `/users/${retCLient.user_id}/mercadopago_account/balance`,
             access_token: retCLient.access_token
           };
 
           httpMethod(options)
-          .then(ret => {
+          .then((ret: Balance) => {
             res.json(ret);
           })
-          .catch(error => res.status(500).json(error));
+          .catch((error: any) => res.status(500).json(error));
 
-        } else
-            res.sendStatus(500);
       })
       .catch(error => res.status(500).json(error))
     } catch (error) {
@@ -152,31 +147,27 @@ export const get_balance_client = (req, res) => {
     }
 }
 
-export const get_total_questions_client = (req, res) => {
+export const get_total_questions_client = (req: Request, res: Response) => {
     try {
       let param = req.query ? "?" + mountParams(req.query) : '';
 
       let client: Client = {
-        user: Number(req.session.user_id),
-        user_id: Number(req.params.client_id)
+        user: Number(req.session['user_id']),
+        user_id: Number(req.params.client_id) ? Number(req.params.client_id) : 0
       };
 
       model_client.md_get_client(client)
-      .then((retCLient: Client) => {
-        if (retCLient) {
+      .then((retCLient) => {
           const options: HttpOptions = {
             path: `/users/${retCLient.user_id}/contacts/questions${param}`,
             access_token: retCLient.access_token
           };
 
           httpMethod(options)
-          .then(ret => {
+          .then((ret: TotalQuestions) => {
             res.json(ret);
           })
-          .catch(error => res.status(500).json(error));
-          
-        } else
-            res.sendStatus(500);
+          .catch((error: any) => res.status(500).json(error));
       })
       .catch(error => res.status(500).json(error))
     } catch (error) {
@@ -185,47 +176,31 @@ export const get_total_questions_client = (req, res) => {
     }
 }
 
-export const up_client = (req, res) => {
+export const up_client = (req: Request, res: Response) => {
   try {
       const dclient: Client = {
-          user: req.session.user_id, 
-          user_id: req.params.client
+          user: req.session['user_id'], 
+          user_id: Number(req.params.client) ? Number(req.params.client) : 0
       };
       md_get_client(dclient)
-      .then((cli: Client) => {
-  /* 
-          let body = {
-              identification_type: req.body.identification_type,
-              identification_number: req.body.identification_number,
-              address: req.body.address,
-              state: req.body.state,
-              city: req.body.city,
-              zip_code: req.body.zip_code,
-              phone:{
-                  area_code: req.body.area_code,
-                  number: req.body.number,
-                  extension: req.body.extension
-              },
-              first_name: req.body.first_name,
-              last_name: req.body.last_name,
-              nickname: req.body.nickname
-          }; */
-  
-          let options: HttpOptions = {
-              path: `/users/${cli.user_id}`,
-              method: 'PUT',
-              access_token: cli.access_token
-          }
+      .then((cli) => {
+        let body = model_client.getBody(req.body);
 
-          httpMethod(options, req.body)
-          .then(at => {
-            res.json(at);
-          })
-          .catch(error => res.status(500).json(error));
-  
+        let options: HttpOptions = {
+            path: `/users/${cli.user_id}`,
+            method: 'PUT',
+            access_token: cli.access_token
+        }
+
+        httpMethod(options, body)
+        .then((at: any) => {
+          res.json(at);
+        })
+        .catch((error: any) => res.status(500).json(error));
+
       })
-      .catch(() => {
-          res.status(500);
+      .catch((err) => {
+          res.status(500).json(err);
       });
   } catch (error) {
       errorRegister(error.message + ' In up_client');
@@ -233,13 +208,13 @@ export const up_client = (req, res) => {
   }
 }
 
-export const set_nick = (req, res) => {
+export const set_nick = (req: Request, res: Response) => {
   try {
     let cli: Client = {
-        user_id: req.params.user_id,
-        user: req.session.user_id,
-        nickname: req.body.nickname
-    }
+        user_id: Number(req.params.user_id) ? Number(req.params.user_id) : 0,
+        user: req.session['user_id'],
+        nickname: req.body.nickname ? req.body.nickname : ''
+    };
     md_add_nickname(cli)
     .then(ret => {
       res.json(ret);

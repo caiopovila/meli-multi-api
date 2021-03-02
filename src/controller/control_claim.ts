@@ -1,3 +1,5 @@
+import { Request, Response } from "express";
+import { DataSearchClaim } from "../interfaces/interface_claim";
 import { Client } from "../interfaces/interface_client";
 import { HttpOptions } from "../interfaces/interface_httpOptons";
 import { md_get_client } from "../model/model_client";
@@ -5,17 +7,17 @@ import { mountParams, httpMethod } from "../model/model_httpReq";
 import { errorRegister } from "../model/model_registerError";
 
 
-export const search_claim = (req, res) => {
+export const search_claim = (req: Request, res: Response) => {
     try {
         let param = req.query ? '?' + mountParams(req.query) : '';
 
         const dclient: Client = {
-            user: req.session.user_id, 
-            user_id: req.params.client_id
+            user: req.session['user_id'], 
+            user_id: Number(req.params['client_id']) ? Number(req.params['client_id']) : 0
         }
         
         md_get_client(dclient)
-        .then((cli: any) => {
+        .then((cli: Client) => {
 
             let options: HttpOptions = {
                 path: `/v1/claims/search${param}`,
@@ -23,10 +25,10 @@ export const search_claim = (req, res) => {
             }
 
             httpMethod(options)
-            .then(claim => {
+            .then((claim: DataSearchClaim) => {
                 res.json(claim);
             })
-            .catch(error => res.status(500).json(error));
+            .catch((error: any) => res.status(500).json(error));
     
         })
         .catch(error => res.status(500).json(error));

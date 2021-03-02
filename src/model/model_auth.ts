@@ -5,7 +5,7 @@ import { errorRegister } from "./model_registerError";
 import * as crypto from 'crypto';
 
 
-export const auth = (user: User) => (
+export const auth = (user: User): Promise<User> => (
     new Promise((resolve, reject) => {
        try {
           let param = [ user.user, user.password ];
@@ -20,6 +20,7 @@ export const auth = (user: User) => (
           });
        } catch (error) {
          errorRegister(error.message + ' In auth');
+         reject({E: 'Erro! login faliu!'});
        }
     })
 );
@@ -31,8 +32,8 @@ export const convertBase64 = (authBase64: string): User => {
       let str = conv.toString('utf-8');
       let ar: string[] = str.split(':');
       let business: User = {
-         user: ar[0],
-         password: ar[1]
+         user: ar[0] ? ar[0] : '',
+         password: ar[1] ? ar[1] : ''
       }
       return business;  
    } catch (error) {
