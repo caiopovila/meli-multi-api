@@ -44,6 +44,7 @@ if (SECURE === 'true') {
   ml.set('trust proxy', 1);
   sss.cookie.secure = true;
   sss.proxy = true;
+  sss.cookie.sameSite = 'none';
 }
 
 ml.use(session(sss));
