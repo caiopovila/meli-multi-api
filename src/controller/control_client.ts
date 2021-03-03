@@ -44,7 +44,7 @@ export const get_notices = (req: Request, res: Response) => {
       };
       
       model_client.md_get_client(client)
-      .then((retCLient: Client) => {
+      .then((retCLient) => {
         
         const options: HttpOptions = {
           path: `/communications/notices?${param}`,
@@ -75,7 +75,7 @@ export const get_total_visits = (req: Request, res: Response) => {
       };
 
       model_client.md_get_client(client)
-      .then((retCLient: Client) => {
+      .then((retCLient) => {
         const options: HttpOptions = {
           path: `/users/${retCLient.user_id}/items_visits${param}`,
           access_token: retCLient.access_token

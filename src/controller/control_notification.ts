@@ -1,7 +1,9 @@
 import { Request, Response } from 'express';
 import { Client } from '../interfaces/interface_client';
+import { Error } from '../interfaces/interface_error';
 import { HttpOptions } from '../interfaces/interface_httpOptons';
 import { MessagesNotification } from '../interfaces/interface_notification';
+import { ValidationError } from '../interfaces/interface_validation';
 
 import { md_get_client, md_list_client } from "../model/model_client";
 import { httpMethod } from "../model/model_httpReq";
@@ -11,38 +13,40 @@ import { CLIENT_ID } from "../model/model_validate_token";
 
 export const get_list_notif = (req: Request, res: Response) => {
     try {
-        md_list_client(req.session['user_id'])
-        .then((cli) => {
 
-            let all: Array<MessagesNotification> = [];
+        let all: Array<MessagesNotification> = [];
+        let err: ValidationError | Error | any = {};
 
-            try {
-             
-                cli.forEach((item) => {
-                    
-                    const options: HttpOptions = {
-                        path: `/missed_feeds?app_id=${CLIENT_ID}`,
-                        access_token: item.access_token
-                    }
+        try {
+                
+            md_list_client(req.session['user_id'])
+            .then((cli) => {
+                
+                    cli.forEach((item) => {
+                        
+                        const options: HttpOptions = {
+                            path: `/missed_feeds?app_id=${CLIENT_ID}`,
+                            access_token: item.access_token
+                        }
 
-                    httpMethod(options)
-                    .then((notf: MessagesNotification) => {
-                        all.push(notf);
-                    })
-                    .catch((error: any) => res.status(500).json(error));
+                        httpMethod(options)
+                        .then((notf: MessagesNotification) => {
+                            all.push(notf);
+                        })
+                        .catch((error: any) => err = {user: item.nickname, error: error});
 
-                });
+                    });
+            })
+            .catch((error) => err = error);
 
-            } finally {
+        } finally {
 
-                if (all.length > 0)
-                    res.json(all);
-                else
-                    res.json({E: 'Sem notificações'});   
-            }
+            if (all.length > 0)
+                res.json({all, err});
+            else
+                res.json({E: 'Sem notificações', err}); 
 
-        })
-        .catch((error) => res.status(500).json(error));
+        }
     } catch (error) {
         errorRegister(error.message + ' In get_list_notif');
         res.sendStatus(500);
