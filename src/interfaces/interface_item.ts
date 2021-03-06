@@ -173,26 +173,22 @@ export interface Description {
     plain_text: string
 }
 
-export interface DataSearchItem {
+export interface DataSearchItem extends DataSearch<Item> {
     site_id: string,
     available_filters: Array<Filter>,
-    filters: Array<Filter>,
-    query?: string,
-    paging?: Paging,
-    results: Array<Item>,
-    available_sorts: Array<Sort>,
-    sort: Sort
+    filters: Array<Filter>
 }
 
-export interface ItemsClient extends DataSearch<string> { }
+export interface ItemsClient extends DataSearch<string> {
+    seller_id: string
+}
 
 export interface DataSearch<T> {
-    seller_id: string,
     query: string,
     paging: Paging,
     results: Array<T>,
     orders?: Array<Sort>,
     available_orders?: Array<Sort | any>,
     available_sorts?: Array<Sort | any>,
-    sort?: Array<Sort>,
+    sort?: Array<Sort> | Sort,
 } 

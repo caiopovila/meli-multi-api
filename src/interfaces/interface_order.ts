@@ -2,6 +2,7 @@ import { Phone } from "./interface_client";
 import { DataSearch } from "./interface_item";
 
 export interface SearchOrder extends DataSearch<Order> {
+    seller_id: string,
     display: string
 }
 

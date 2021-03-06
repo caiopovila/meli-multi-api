@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Client } from '../interfaces/interface_client';
 import { HttpOptions } from '../interfaces/interface_httpOptons';
-import { Question, SearchQuestions } from '../interfaces/interface_questions';
+import { BlackListQuestion, Question, SearchQuestions } from '../interfaces/interface_questions';
 
 import { md_get_client } from "../model/model_client";
 import { httpMethod, mountParams } from "../model/model_httpReq";
@@ -118,7 +118,7 @@ export const bl_questions_add = (req: Request, res: Response) => {
             }
 
             let body = {
-                user_id: req.body.id_user
+                user_id: 'user_id' in req.body ? req.body.user_id : ''
             };
     
             httpMethod(options, body)
@@ -134,7 +134,7 @@ export const bl_questions_add = (req: Request, res: Response) => {
             res.status(500).json(error);
         });
     } catch (error) {
-        errorRegister(error.message + ' In blacklist_add');
+        errorRegister(error.message + ' In bl_questions_add');
         res.sendStatus(500);
     }
 }
@@ -165,7 +165,7 @@ export const bl_questions_rm = (req: Request, res: Response) => {
             res.status(500).json(error);
         });
     } catch (error) {
-        errorRegister(error.message + ' In blacklist_rm');
+        errorRegister(error.message + ' In bl_questions_rm');
         res.sendStatus(500);
     }
 }
@@ -185,7 +185,7 @@ export const get_client_bl_questions = (req: Request, res: Response) => {
             }
 
             httpMethod(optionsBl)
-            .then((bl: any) => {
+            .then((bl: BlackListQuestion) => {
                 res.json(bl);
             })
             .catch((error: any) => {

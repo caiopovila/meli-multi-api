@@ -114,7 +114,7 @@ export const post_clone_item = (req: Request, res: Response) => {
             .then((responsePostItem: Item) => {
                 res.json(responsePostItem);
             })
-            .catch((error: any) => res.status(500).json(error));
+            .catch((error: any) => res.status(500).json({user: clientdb.nickname, response: error}));
 
         })
         .catch(error => res.status(500).json(error));
@@ -188,7 +188,7 @@ export const put_item = (req: Request, res: Response) => {
     try {
         let client: Client = {
             user: req.session['user_id'],
-            user_id: req.body.client
+            user_id: req.body && req.body.client ? req.body.client : 0
         };
 
         let body: any = {};

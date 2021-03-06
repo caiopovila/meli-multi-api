@@ -100,7 +100,7 @@ export const md_list_users = (): Promise<Array<User>> => (
     })
 );
 
-export const md_get_user = (userId: number): Promise<Client> => (
+export const md_get_user = (userId: number): Promise<User> => (
     new Promise((resolve, reject) => {
         try {
             let param = [ userId ];

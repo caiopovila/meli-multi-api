@@ -1,3 +1,5 @@
+import { Paging } from "./interface_paging";
+
 export interface TotalQuestions {
     date_from: Date,
     date_to: Date,
@@ -52,4 +54,14 @@ export interface QuestionAnswer {
 export interface QuestionFrom {
     id: number,
     answered_questions: number
+}
+
+export interface BlackListQuestion {
+        paging: Paging,
+        users: Array<{id: number}>
+}
+
+export interface PostQuestion {
+    text: string,
+    item_id: string
 }

@@ -1,12 +1,9 @@
 export interface ValidationOk {
-    S: String
+    S?: String
 }
 
 export interface ValidationError {
-    E: String
-}
-
-export interface Validation {
-    S?: String,
     E?: String
 }
+
+export interface Validation extends ValidationError, ValidationOk { }

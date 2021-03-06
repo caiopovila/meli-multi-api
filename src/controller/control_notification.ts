@@ -33,7 +33,7 @@ export const get_list_notif = (req: Request, res: Response) => {
                         .then((notf: MessagesNotification) => {
                             all.push(notf);
                         })
-                        .catch((error: any) => err = {user: item.nickname, error: error});
+                        .catch((error: any) => err = {user: item.nickname, response: error});
 
                     });
             })

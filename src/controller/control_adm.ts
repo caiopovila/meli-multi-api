@@ -1,5 +1,4 @@
 import { Request, Response } from 'express';
-import { Client } from '../interfaces/interface_client';
 import { HttpOptions } from '../interfaces/interface_httpOptons';
 import { Sites } from '../interfaces/interface_sites';
 import { User } from '../interfaces/interface_user';
@@ -67,7 +66,7 @@ export const del_user = (req: Request, res: Response) => {
 export const list_users = (req: Request, res: Response) => {
     try {
         model_adm.md_list_users()
-        .then((ret: Array<User>) => res.json(ret))
+        .then((ret) => res.json(ret))
         .catch((err: ValidationError) => res.status(500).json(err))
     } catch (error) {
         errorRegister(error.message + ' In list_users');
@@ -78,7 +77,7 @@ export const list_users = (req: Request, res: Response) => {
 export const get_user = (req: Request, res: Response) => {
     try {
         model_adm.md_get_user(req.session['user_id'] ? req.session['user_id'] : 0)
-        .then((ret: Client) => res.json(ret))
+        .then((ret) => res.json(ret))
         .catch((err: ValidationError) => res.status(500).json(err))
     } catch (error) {
         errorRegister(error.message + ' In get_user');
