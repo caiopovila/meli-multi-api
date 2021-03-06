@@ -138,3 +138,10 @@ export interface OrderItemData {
     id: string,
     title: string
 }
+
+export interface BlackListOrder {
+    user: {
+        id: number,
+        blocked: boolean
+    }
+}

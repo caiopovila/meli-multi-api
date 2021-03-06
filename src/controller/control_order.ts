@@ -1,7 +1,7 @@
 import { Request, Response } from 'express';
 import { Client } from '../interfaces/interface_client';
 import { HttpOptions } from '../interfaces/interface_httpOptons';
-import { SearchOrder } from '../interfaces/interface_order';
+import { BlackListOrder, SearchOrder } from '../interfaces/interface_order';
 
 import { md_get_client } from "../model/model_client";
 import { httpMethod } from "../model/model_httpReq";
@@ -54,7 +54,7 @@ export const get_client_bl_orders = (req: Request, res: Response) => {
             }
 
             httpMethod(optionsBl)
-            .then((bl: any) => {
+            .then((bl: Array<BlackListOrder>) => {
                 res.json(bl);
             })
             .catch((error: any) => {
@@ -87,7 +87,7 @@ export const bl_orders_add = (req: Request, res: Response) => {
             }
 
             let body = {
-                user_id: req.body && req.body.id_user ? req.body.id_user : ''
+                user_id: 'user_id' in req.body ? req.body.user_id : ''
             };
     
             httpMethod(options, body)
