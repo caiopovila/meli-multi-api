@@ -5,6 +5,7 @@ import { REDIRECT_URI, CLIENT_ID, CLIENT_SECRET, DOMAIN_FRONT, DOMAIN_BACK, vali
 import { httpMethod } from '../model/model_httpReq';
 import { NextFunction, Request, Response } from 'express';
 import { AccessToken, Client } from '../interfaces/interface_client';
+import { HttpOptions } from '../interfaces/interface_httpOptons';
 
 
 export const validate_token = (req: Request, res: Response, next: NextFunction) => {
@@ -40,7 +41,7 @@ export const code_valid = (req: Request, res: Response) => {
         redirect_uri: REDIRECT_URI
       }
       
-      const options = {
+      const options: HttpOptions = {
         path: '/oauth/token',
         method: 'POST',
         headers: {

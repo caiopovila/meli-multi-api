@@ -82,7 +82,7 @@ export const del_question = (req: Request, res: Response) => {
 
             let options: HttpOptions = {
                 path: `/questions/${req.params.question_id}`,
-                method: 'delete',
+                method: 'DELETE',
                 access_token: cli.access_token
             }
     

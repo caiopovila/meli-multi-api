@@ -1,4 +1,5 @@
 import { AccessToken, Client } from '../interfaces/interface_client';
+import { HttpOptions } from '../interfaces/interface_httpOptons';
 import { md_del_client, md_list_client, md_post_client } from './model_client';
 import { httpMethod } from './model_httpReq';
 import { errorRegister } from './model_registerError';
@@ -15,7 +16,7 @@ export const validate_token_bd = (user_id: number): void => {
                 
                 if (new Date() >= client.expires_in) {
 
-                    const options = {
+                    const options: HttpOptions = {
                         path: `/oauth/token?grant_type=refresh_token&client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&refresh_token=${client.refresh_token}`,
                         method: 'POST',
                         headers: {
