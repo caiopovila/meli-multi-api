@@ -33,6 +33,12 @@ route.post('/', [restrict, validate_token], control_item.post_clone_item);
 
 route.post('/img', [restrict, validate_token], control_item.post_img);
 
+route.post('/description', [restrict, validate_token], control_item.post_description_item);
+
+route.put('/description', [restrict, validate_token], control_item.put_description_item);
+
+route.delete('/:client_id/:item_id', [restrict, validate_token], control_item.delete_item);
+
 /* route.post('/', [restrict, validate_token], control_item.post_item); */
 
 route.put('/:id', [restrict, validate_token], control_item.put_item);

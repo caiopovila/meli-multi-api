@@ -22,9 +22,6 @@ export const mountBody = (req: any): string => {
     if (req.condition)
         body.condition = req.condition;
 
-    if (req.description)
-        body.description = req.description;
-
     if (req.attributes)
         body.attributes = req.attributes;
 

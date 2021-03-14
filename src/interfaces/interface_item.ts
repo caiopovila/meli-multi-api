@@ -1,11 +1,31 @@
+import { SellerReputation } from "./interface_client";
 import { Filter } from "./interface_filter";
 import { Paging } from "./interface_paging";
 
+export interface DataItemParam {
+    limit: number,
+    offset: number,
+    orders: string,
+    status: string,
+    sub_status: string,
+    listing_type_id: number,
+    buying_mode: string,
+}
+
+export interface RetItem {
+    description: Description,
+    data: Item
+}
+
 export interface Item {
-    id: number,
+    description?: string;
+    id: string,
     site_id: string,
     title: string,
     subtitle: string,
+    seller: {
+        seller_reputation: SellerReputation
+    },
     seller_id: number,
     category_id: string,
     official_store_id: number,
@@ -118,6 +138,8 @@ export interface SellerAddress extends Geolocation {
     state: SellerAddressState,
     country: SellerAddressCountry,
     search_location: SearchLocation,
+    zip_code?: string,
+    address_line?: string,
     id: number
 }
 
@@ -176,7 +198,19 @@ export interface Description {
 export interface DataSearchItem extends DataSearch<Item> {
     site_id: string,
     available_filters: Array<Filter>,
-    filters: Array<Filter>
+    filters: Array<Filter>,
+    seller?: DataSearchItemSellerInfo
+}
+
+export interface DataSearchItemSellerInfo {
+    car_dealer: false,
+    eshop: any,
+    id: number,
+    nickname: string,
+    permalink: string | any,
+    real_estate_agency: boolean,
+    registration_date: Date,
+    tags: any
 }
 
 export interface ItemsClient extends DataSearch<string> {
@@ -191,4 +225,60 @@ export interface DataSearch<T> {
     available_orders?: Array<Sort | any>,
     available_sorts?: Array<Sort | any>,
     sort?: Array<Sort> | Sort,
-} 
+}
+
+export interface FilterDataItems {
+    category?: string,
+    price?: string,
+    short?: string,
+    state?: string,
+    shipping_cost?: string,
+    offset?: number,
+    limit?: number,
+    power_seller?: boolean,
+    nickname?: string
+}
+
+export interface ReviewsItem {
+    paging: Paging,
+    reviews: Array<Review>,
+    rating_average: number,
+    rating_levels: RatingLevels,
+    helpful_reviews: HelpfulReviews,
+    attributes: Array<any>
+}
+
+export interface Review {
+    id: number,
+    reviewable_object: ReviewableObject,
+    date_created: Date,
+    status: string,
+    title: string,
+    content: string,
+    rate: number,
+    valorization: number,
+    likes: number,
+    dislikes: number,
+    reviewer_id: number,
+    buying_date: Date,
+    relevance: number,
+    forbidden_words: number
+}
+
+export interface ReviewableObject {
+    id: string,
+    type: string
+}
+
+export interface RatingLevels {
+    one_star: number,
+    two_star: number,
+    three_star: number,
+    four_star: number,
+    five_star: number
+}
+
+export interface HelpfulReviews {
+    best_max_stars: any,
+    best_min_stars: any
+}

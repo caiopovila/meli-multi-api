@@ -125,6 +125,109 @@ export const post_clone_item = (req: Request, res: Response) => {
     }
 }
 
+export const post_description_item = (req: Request, res: Response) => {
+    try {
+        const dclient: Client = {
+            user: req.session['user_id'], 
+            user_id: 'client' in req.body ? req.body['client'] : 0
+        }
+    
+        md_get_client(dclient)
+        .then((clientdb) => {
+
+            let body = {} as Description;
+            body = 'plain_text' in req.body ? req.body['plain_text'] : {};
+
+            const optionsPostDescription: HttpOptions = {
+                path: `/items/${req.params['item_id']}/description`,
+                method: 'POST',
+                access_token: clientdb.access_token
+            }
+
+            httpMethod(optionsPostDescription, body)
+            .then((responsePostDescription: Item) => {
+                res.json(responsePostDescription);
+            })
+            .catch((error: any) => res.status(500).json({user: clientdb.nickname, response: error}));
+
+        })
+        .catch(error => res.status(500).json(error));
+
+    } catch (error) {
+        errorRegister(error.message ? error.message : error.E + ' In post_description_item');
+        res.sendStatus(500);
+    }
+}
+
+export const put_description_item = (req: Request, res: Response) => {
+    try {
+        const dclient: Client = {
+            user: req.session['user_id'], 
+            user_id: 'client' in req.body ? req.body['client'] : 0
+        }
+    
+        md_get_client(dclient)
+        .then((clientdb) => {
+
+            let body = {} as Description;
+            body = 'plain_text' in req.body ? req.body['plain_text'] : {};
+
+            const optionsPutDescription: HttpOptions = {
+                path: `/items/${req.params['item_id']}/description?api_version=2`,
+                method: 'PUT',
+                access_token: clientdb.access_token
+            }
+
+            httpMethod(optionsPutDescription, body)
+            .then((responsePutDescription: Item) => {
+                res.json(responsePutDescription);
+            })
+            .catch((error: any) => res.status(500).json({user: clientdb.nickname, response: error}));
+
+        })
+        .catch(error => res.status(500).json(error));
+
+    } catch (error) {
+        errorRegister(error.message ? error.message : error.E + ' In put_description_item');
+        res.sendStatus(500);
+    }
+}
+
+export const delete_item = (req: Request, res: Response) => {
+    try {
+        const dclient: Client = {
+            user: req.session['user_id'], 
+            user_id: 'client_id' in req.params ? req.body['client_id'] : 0
+        }
+    
+        md_get_client(dclient)
+        .then((clientdb) => {
+
+            let body = {
+                deleted: true
+            };
+
+            const optionsDeleteItem: HttpOptions = {
+                path: `/items/${req.params['item_id']}`,
+                method: 'PUT',
+                access_token: clientdb.access_token
+            }
+
+            httpMethod(optionsDeleteItem, body)
+            .then((responseDeleteItem: Item) => {
+                res.json(responseDeleteItem);
+            })
+            .catch((error: any) => res.status(500).json({user: clientdb.nickname, response: error}));
+
+        })
+        .catch(error => res.status(500).json(error));
+
+    } catch (error) {
+        errorRegister(error.message ? error.message : error.E + ' In delete_item');
+        res.sendStatus(500);
+    }
+}
+
 export const post_img = (req: Request, res: Response) => {
     let pictures: any = [];
 
